@@ -9,15 +9,17 @@ Rules:
 4. 摘要：为每一条生成一个不超过5个字的“标题”。
 
 Output JSON Format:
-[
-  {
-    "id": 1,
-    "title": "核心概念名",
-    "content": "这里是清洗后的完整知识点描述。",
-    "tags": ["关键词1", "关键词2"]
-  },
-  ...
-]
+{
+  "points": [
+    {
+      "id": 1,
+      "title": "核心概念名",
+      "content": "这里是清洗后的完整知识点描述。",
+      "tags": ["关键词1", "关键词2"]
+    },
+    ...
+  ]
+}
 `;
 
 // Visualizer
@@ -121,10 +123,12 @@ Rules:
 4. 包含“听觉钩子”：在重点处让 Host A 重复或惊叹。
 
 Output JSON Format:
-[
-  {"speaker": "Host A", "text": "哎，我说，咱们今天要聊的这个概念，我怎么看着这么晕呢？"},
-  {"speaker": "Host B", "text": "哈哈，别急。其实你可以把它想象成..."}
-]
+{
+  "script": [
+    {"speaker": "Host A", "text": "哎，我说，咱们今天要聊的这个概念，我怎么看着这么晕呢？"},
+    {"speaker": "Host B", "text": "哈哈，别急。其实你可以把它想象成..."}
+  ]
+}
 `;
 
 // Feynman Coach
@@ -158,18 +162,20 @@ Rules:
 3. 为每个挖空处生成 3 层提示。
 
 Output JSON Format:
-[
-  {
-    "full_sentence": "线粒体是细胞进行有氧呼吸的主要场所。",
-    "cloze_parts": [
-      {
-        "answer": "线粒体",
-        "position_index": 0,
-        "hint_1": "细胞器名称 (X__)",
-        "hint_2": "能量工厂"
-      },
-      ...
-    ]
-  }
-]
+{
+  "items": [
+    {
+      "full_sentence": "线粒体是细胞进行有氧呼吸的主要场所。",
+      "cloze_parts": [
+        {
+          "answer": "线粒体",
+          "position_index": 0,
+          "hint_1": "细胞器名称 (X__)",
+          "hint_2": "能量工厂"
+        },
+        ...
+      ]
+    }
+  ]
+}
 `;

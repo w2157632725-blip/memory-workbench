@@ -11,9 +11,9 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Content is required' }, { status: 400 });
     }
 
-    const result = await generateJSONWithTemp<ClozeItem[]>(content, CLOZE_PROMPT, 0.2);
+    const result = await generateJSONWithTemp<{ items: ClozeItem[] }>(content, CLOZE_PROMPT, 0.2);
 
-    return NextResponse.json(result);
+    return NextResponse.json(result.items || []);
   } catch (error) {
     console.error('Cloze Error:', error);
     return NextResponse.json({ error: 'Failed to generate cloze items' }, { status: 500 });
