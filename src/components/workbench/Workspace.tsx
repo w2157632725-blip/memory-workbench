@@ -67,8 +67,8 @@ export default function Workspace() {
          <circle cx="90" cy="65" r="2" fill="currentColor" />
       </svg>
 
-      {/* Top Bar with Glass effect - Added pr-24 to avoid overlap with auth button */}
-      <div className="p-4 border-b border-white/20 dark:border-white/10 bg-white/40 dark:bg-[#12162B]/40 backdrop-blur-xl sticky top-0 z-30 pr-32">
+      {/* Top Bar with Glass effect */}
+      <div className="p-4 border-b border-white/20 dark:border-white/10 bg-white/40 dark:bg-[#12162B]/40 backdrop-blur-xl sticky top-0 z-30">
         <Tabs value={currentTab} onValueChange={handleTabChange} className="w-full max-w-4xl mx-auto">
           <TabsList className="grid w-full grid-cols-5 h-12 p-1 bg-[#F0F8FA]/50 dark:bg-[#12162B]/50 backdrop-blur-md border border-white/30 dark:border-white/5 shadow-inner rounded-xl">
             <TabsTrigger value="visual" className="rounded-lg data-[state=active]:bg-white data-[state=active]:text-primary data-[state=active]:shadow-md transition-all duration-300">

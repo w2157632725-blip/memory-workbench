@@ -11,6 +11,7 @@ import { Input } from '@/components/ui/input';
 
 export default function ClozeTab() {
   const { knowledgePoints, selectedPointIds } = useWorkbenchStore();
+  const { checkLimit, incrementUsage } = useUserStore();
   const [loading, setLoading] = useState(false);
   const [items, setItems] = useState<any[] | null>(null);
   const [revealedHints, setRevealedHints] = useState<Record<string, number>>({});
