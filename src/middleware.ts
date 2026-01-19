@@ -25,6 +25,28 @@ export function middleware(request: NextRequest) {
   // 5. 引用策略
   response.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin');
 
+  // 6. 内容安全策略 (Content Security Policy - CSP)
+  // 这是最强的防御层，严格限制网页可以加载哪些资源，防止 XSS 攻击。
+  // 注意：如果你后续添加了 Google Analytics 或其他脚本，需要在这里把它们的域名加上去。
+  const cspHeader = `
+    default-src 'self';
+    script-src 'self' 'unsafe-inline' 'unsafe-eval' https://vercel.live;
+    style-src 'self' 'unsafe-inline';
+    img-src 'self' blob: data: https://*;
+    font-src 'self' data:;
+    object-src 'none';
+    base-uri 'self';
+    form-action 'self';
+    frame-ancestors 'none';
+    block-all-mixed-content;
+    upgrade-insecure-requests;
+  `;
+  // 将多行字符串转换为单行，去除换行符
+  response.headers.set(
+    'Content-Security-Policy',
+    cspHeader.replace(/\s{2,}/g, ' ').trim()
+  );
+
   return response;
 }
 
