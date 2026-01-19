@@ -2,15 +2,18 @@ import OpenAI from "openai";
 
 // Configuration for different providers
 const getClientConfig = () => {
-  if (process.env.ZHIPU_API_KEY) {
+  const zhipuKey = process.env.ZHIPU_API_KEY?.trim();
+  const openaiKey = process.env.OPENAI_API_KEY?.trim();
+
+  if (zhipuKey) {
     return {
-      apiKey: process.env.ZHIPU_API_KEY,
+      apiKey: zhipuKey,
       baseURL: "https://open.bigmodel.cn/api/paas/v4/",
       defaultModel: "glm-4-flash", // Free model
     };
   }
   return {
-    apiKey: process.env.OPENAI_API_KEY,
+    apiKey: openaiKey,
     baseURL: undefined, // Default OpenAI URL
     defaultModel: "gpt-4o",
   };
