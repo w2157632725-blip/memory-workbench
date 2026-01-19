@@ -26,7 +26,7 @@ export async function POST(req: NextRequest) {
       size: "1024x1024",
     });
 
-    return NextResponse.json({ url: response.data[0].url });
+    return NextResponse.json({ url: response.data?.[0]?.url });
   } catch (error: any) {
     console.error('Image Generation Error:', error);
     return NextResponse.json({ error: error.message || 'Failed to generate image' }, { status: 500 });
