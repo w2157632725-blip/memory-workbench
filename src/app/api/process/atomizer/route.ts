@@ -14,8 +14,11 @@ export async function POST(req: NextRequest) {
     const result = await generateJSONWithTemp<{ points: KnowledgePoint[] }>(text, ATOMIZER_PROMPT, 0.2);
 
     return NextResponse.json(result.points || []);
-  } catch (error) {
+  } catch (error: any) {
     console.error('Atomizer Error:', error);
-    return NextResponse.json({ error: 'Failed to process text' }, { status: 500 });
+    return NextResponse.json({ 
+      error: 'Failed to process text',
+      details: error.message || 'Unknown error'
+    }, { status: 500 });
   }
 }

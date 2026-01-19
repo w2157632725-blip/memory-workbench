@@ -14,8 +14,11 @@ export async function POST(req: NextRequest) {
     const result = await generateJSONWithTemp<VisualizerResult>(content, VISUALIZER_PROMPT, 0.1);
 
     return NextResponse.json(result);
-  } catch (error) {
+  } catch (error: any) {
     console.error('Visualizer Error:', error);
-    return NextResponse.json({ error: 'Failed to visualize content' }, { status: 500 });
+    return NextResponse.json({ 
+      error: 'Failed to generate visualization',
+      details: error.message || 'Unknown error'
+    }, { status: 500 });
   }
 }

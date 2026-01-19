@@ -14,8 +14,11 @@ export async function POST(req: NextRequest) {
     const result = await generateJSONWithTemp<{ script: PodcastLine[] }>(content, PODCAST_PROMPT, 0.7);
 
     return NextResponse.json(result.script || []);
-  } catch (error) {
+  } catch (error: any) {
     console.error('Podcast Error:', error);
-    return NextResponse.json({ error: 'Failed to generate podcast script' }, { status: 500 });
+    return NextResponse.json({ 
+      error: 'Failed to generate podcast script',
+      details: error.message || 'Unknown error'
+    }, { status: 500 });
   }
 }

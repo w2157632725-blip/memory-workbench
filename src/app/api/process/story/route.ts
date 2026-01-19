@@ -14,8 +14,11 @@ export async function POST(req: NextRequest) {
     const result = await generateJSONWithTemp<StoryResult>(content, STORY_CODER_PROMPT, 0.9);
 
     return NextResponse.json(result);
-  } catch (error) {
+  } catch (error: any) {
     console.error('Story Error:', error);
-    return NextResponse.json({ error: 'Failed to generate story' }, { status: 500 });
+    return NextResponse.json({ 
+      error: 'Failed to generate story',
+      details: error.message || 'Unknown error'
+    }, { status: 500 });
   }
 }

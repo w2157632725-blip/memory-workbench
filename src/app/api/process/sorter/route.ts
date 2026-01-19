@@ -16,8 +16,11 @@ export async function POST(req: NextRequest) {
     const result = await generateJSONWithTemp<SorterResult>(itemsStr, SORTER_PROMPT, 0.3);
 
     return NextResponse.json(result);
-  } catch (error) {
+  } catch (error: any) {
     console.error('Sorter Error:', error);
-    return NextResponse.json({ error: 'Failed to sort items' }, { status: 500 });
+    return NextResponse.json({ 
+      error: 'Failed to sort items',
+      details: error.message || 'Unknown error'
+    }, { status: 500 });
   }
 }
