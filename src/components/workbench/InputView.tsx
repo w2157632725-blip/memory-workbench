@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { useWorkbenchStore } from '@/lib/store';
+import { useUserStore } from '@/lib/subscription/store';
 import { dbService } from '@/lib/supabase/service';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
@@ -22,6 +23,7 @@ export default function InputView() {
   const [petals, setPetals] = useState<Array<{left: string, animationDelay: string, animationDuration: string, opacity: number}>>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { setKnowledgePoints, setViewMode } = useWorkbenchStore();
+  const { checkLimit, incrementUsage } = useUserStore();
 
   useEffect(() => {
     // Generate petals only on client side to avoid hydration mismatch
@@ -47,6 +49,11 @@ export default function InputView() {
   const handleProcess = async () => {
     if (!input.trim()) return;
 
+    if (!checkLimit()) {
+      alert('已达到今日使用次数上限 (40次)。请明天再来！');
+      return;
+    }
+
     setLoading(true);
     try {
       const response = await fetch('/api/process/atomizer', {
@@ -56,23 +63,33 @@ export default function InputView() {
       });
       
       const data = await response.json();
-      if (Array.isArray(data)) {
+      
+      if (data.error) {
+        throw new Error(data.details || data.error);
+      }
+
+      // Handle both array and object { points: [...] } formats
+      const points = Array.isArray(data) ? data : (data.points || []);
+
+      if (Array.isArray(points) && points.length > 0) {
         // Save to local store
-        setKnowledgePoints(data);
+        setKnowledgePoints(points);
         
         // Save to Supabase (async, don't block UI)
-        dbService.saveKnowledgePoints(data.map(p => ({
+        dbService.saveKnowledgePoints(points.map((p: any) => ({
           title: p.title,
           content: p.content,
           tags: p.tags
         }))).catch(err => console.error('Failed to save to Supabase:', err));
 
+        incrementUsage();
         setViewMode('workbench');
       } else {
-        console.error('Invalid response format', data);
+        throw new Error('AI 未能识别出有效的知识点，请尝试换一段文字。');
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error processing text:', error);
+      alert(`拆解失败: ${error.message}`);
     } finally {
       setLoading(false);
     }
