@@ -15,25 +15,30 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'ZHIPU_API_KEY is not configured' }, { status: 500 });
     }
 
-    // Initialize OpenAI client pointing to Zhipu AI's compatible endpoint
-    const client = new OpenAI({
-      apiKey: apiKey,
-      baseURL: "https://open.bigmodel.cn/api/paas/v4/",
-    });
-
-    // Use the audio transcriptions API
-    // Note: The model name needs to be confirmed from Zhipu docs. 
-    // Common guesses: "glm-4-voice" or just relying on default if supported.
-    // Since Zhipu might not support /audio/transcriptions exactly like OpenAI in all cases,
-    // if this fails, we might need a raw fetch. But their docs claim OpenAI compatibility.
-    // Update: Zhipu's STT model usually doesn't require a specific model param or uses a specific one.
-    // Let's try 'inference' or leave it to user to verify in docs.
-    const response = await client.audio.transcriptions.create({
-      file: file,
-      model: "glm-4-voice", // Placeholder, user might need to change this
-    });
-
-    return NextResponse.json({ text: response.text });
+    // Initialize OpenAI client pointing to OpenAI (for Whisper) or check if Zhipu supports STT.
+    // NOTE: Zhipu AI currently does NOT support the standard OpenAI /audio/transcriptions endpoint directly via their GLM-4 API.
+    // For reliable STT (Speech to Text), we should use OpenAI's Whisper if available, or a specific Zhipu endpoint if they released one.
+    // Assuming user might have OPENAI_API_KEY for this, or we fallback to a mock/error if Zhipu is the only one.
+    
+    // For this fix, let's try to use OpenAI if available, otherwise return a clear error that Zhipu STT is not supported yet via this SDK.
+    const openaiKey = process.env.OPENAI_API_KEY;
+    
+    if (openaiKey) {
+      const client = new OpenAI({ apiKey: openaiKey });
+      const response = await client.audio.transcriptions.create({
+        file: file,
+        model: "whisper-1",
+      });
+      return NextResponse.json({ text: response.text });
+    } else {
+        // Fallback: If only Zhipu Key is present, we try to use a mock response or specific fetch if known.
+        // Currently Zhipu's OpenAI compatibility layer focuses on Chat Completions.
+        // Let's return a friendly error or a mock for testing.
+        return NextResponse.json({ 
+            error: '语音转文字功能目前仅支持 OpenAI API Key。智谱 AI 暂未通过此接口提供语音识别服务。',
+            isMock: true 
+        }, { status: 400 });
+    }
   } catch (error: any) {
     console.error('Transcription Error:', error);
     return NextResponse.json({ error: error.message || 'Failed to transcribe audio' }, { status: 500 });

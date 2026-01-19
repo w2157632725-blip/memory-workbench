@@ -189,8 +189,14 @@ export default function FeynmanTab() {
           <Button size="icon" className="h-[60px] w-[60px]" onClick={handleSend} disabled={loading || !input.trim()}>
             <Send className="h-5 w-5" />
           </Button>
-          <Button size="icon" variant="outline" className="h-[60px] w-[60px]">
-            <Mic className="h-5 w-5" />
+          <Button 
+            size="icon" 
+            variant={isRecording ? "destructive" : "outline"} 
+            className="h-[60px] w-[60px]"
+            onClick={isRecording ? stopRecording : startRecording}
+            disabled={loading}
+          >
+            {isRecording ? <StopCircle className="h-5 w-5" /> : <Mic className="h-5 w-5" />}
           </Button>
         </div>
       </Card>
